@@ -72,7 +72,7 @@ export default class Band {
 		 * How much money the band has
 		 * @type {number}
 		 */
-		this.money = 1500;
+		this.money = 500;
 
 		this._upgrades = {
 			vocals: 0,
@@ -188,12 +188,7 @@ export default class Band {
 		this._performed = false;
 		this._upgraded = false;
 		console.log(info(`\nOnto the next day! It's now been ${this.day} days since ${this.name} was formed.\n` +
-			`The band has $${this.money} and ${this.fame} fame.\n\n`+
-			`Upgrades:\n` +
-			`${this.names.vocals} (vocalist): ${this._upgrades.vocals}\n` +
-			`${this.names.guitar} (guitarist): ${this._upgrades.guitar}\n` +
-			`${this.names.bass} (bassist): ${this._upgrades.bass}\n` +
-			`${this.names.drums} (drummer): ${this._upgrades.drums}\n` + "\n"));
+			`The band has $${this.money} and ${this.fame} fame.\n\n`));
 		
 		if (venues[this._lastUnlockedVenue+1].fameMin <= this.fame) {
 			this._lastUnlockedVenue++;

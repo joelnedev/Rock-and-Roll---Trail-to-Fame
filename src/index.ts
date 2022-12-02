@@ -114,7 +114,7 @@ if (!band) {
 	]);
 
 	band = new Band(initResults.name as string, { vocals: initResults.vocals as string, guitar: initResults.guitar as string, bass: initResults.bass as string, drums: initResults.drums as string} );
-	console.log(info("\n1Your band is called " + band.name + " and your members are:"));
+	console.log(info("\nYour band is called " + band.name + " and your members are:"));
 	console.log(info("Vocalist: " + band.names.vocals));
 	console.log(info("Guitarist: " + band.names.guitar));
 	console.log(info("Bassist: " + band.names.bass));
@@ -149,6 +149,7 @@ const mainMenu = async () => {
 
 	switch (actions[result.action as number - 1]) {
 		case "perform":
+			if (band!._performed) return console.log(error("You have already performed a show today!\n"));
 			const venues = band!.venueList();
 			if (!venues) {
 				console.log(error("You have no venues to perform at!"));
@@ -175,7 +176,8 @@ const mainMenu = async () => {
 			band!.performShow(venues[venueResult.venue as number - 1]);
 			return 2;
 		case "upgrade":
-			console.log(info("You have $" + band!.money + " to spend on equipment upgrades and other opportunities."));
+			if (band!._upgraded) return console.log(error("You have already upgraded your equipment today!\n"));
+			console.log(info("Balance: $" + band!.money));
 			console.log(menu("Available upgrades for your band members:\n"));
 			const upgrades = {
 				vocals: band!.nextUpgrade("vocals"),
