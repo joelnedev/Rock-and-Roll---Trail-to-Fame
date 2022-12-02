@@ -9,7 +9,6 @@ const path = process.platform == "win32"
 	: process.env.HOME + "/Library/Application Support/com.baljeetstudios.trailtofame/band.json";
 
 export const exit = (band: Band, save: boolean = true) => {
-
 	prompt.get([
 		{
 			name: "confirm",
@@ -30,6 +29,8 @@ export const exit = (band: Band, save: boolean = true) => {
 					_labelNoDay: band._labelNoDay,
 					_scoreset: band._scoreset,
 					_upgrades: band._upgrades,
+					name: band.name,
+					names: band.names,
 					day: band.day,
 					money: band.money,
 					fame: band.fame
@@ -47,17 +48,16 @@ export const exit = (band: Band, save: boolean = true) => {
 let band: Band|undefined = undefined;
 
 if (fs.existsSync(path)) {
-	prompt.get([{
+	const { load } = await prompt.get([{
 		name: "load",
 		description: alert("A save file was found. Would you like to load it? (y/n)"),
 		type: "string",
 		pattern: /^(y|n)$/i,
 		message: error("Please enter 'y' or 'n'"),
 		required: true
-	}], (err, result) => {
-		if (err) throw err;
-		if ((result.load as string).toLowerCase() === "n") return;
-		const bandData = JSON.parse(fs.readFileSync(path, "utf8"));
+	}]);
+	if ((load as string).toLowerCase() === "y") {
+	const bandData = JSON.parse(fs.readFileSync(path, "utf8"));
 		band = new Band(bandData.name, bandData.names);
 		band._isSigned = bandData._isSigned;
 		band._lastUnlockedVenue = bandData._lastUnlockedVenue;
@@ -67,12 +67,12 @@ if (fs.existsSync(path)) {
 		band.day = bandData.day;
 		band.money = bandData.money;
 		band.fame = bandData.fame;
+	}
 
-		console.log(info("Welcome back to Rock and Roll: Trail to Fame!"));
-	});
-}
+	console.log(info("Welcome back to Rock and Roll: Trail to Fame!\n"));
+} else {
+	fs.mkdirSync(path.substring(0,path.length-10), { recursive: true });
 
-if (!band) {
 	console.log(info("Welcome to Rock and Roll: Trail to Fame!\n"));
 	console.log(info("You are the manager of a rock and roll band, and they're relying on you to make them rock legends!"));
 	console.log(info("You'll have to manage their finances, their equipment, and schedule their shows to make them the best band in the world!\n"));
@@ -225,4 +225,4 @@ while (true) {
 	const menuResult = await mainMenu();
 	if (menuResult === 1) break;
 }
-exit(band);
+exit(band!);
