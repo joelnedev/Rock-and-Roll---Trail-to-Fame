@@ -47,32 +47,7 @@ export const exit = (band: Band, save: boolean = true) => {
 
 let band: Band|undefined = undefined;
 
-if (fs.existsSync(path)) {
-	const { load } = await prompt.get([{
-		name: "load",
-		description: alert("A save file was found. Would you like to load it? (y/n)"),
-		type: "string",
-		pattern: /^(y|n)$/i,
-		message: error("Please enter 'y' or 'n'"),
-		required: true
-	}]);
-	if ((load as string).toLowerCase() === "y") {
-	const bandData = JSON.parse(fs.readFileSync(path, "utf8"));
-		band = new Band(bandData.name, bandData.names);
-		band._isSigned = bandData._isSigned;
-		band._lastUnlockedVenue = bandData._lastUnlockedVenue;
-		band._labelNoDay = bandData._labelNoDay;
-		band._scoreset = bandData._scoreset;
-		band._upgrades = bandData._upgrades;
-		band.day = bandData.day;
-		band.money = bandData.money;
-		band.fame = bandData.fame;
-	}
-
-	console.log(info("Welcome back to Rock and Roll: Trail to Fame!\n"));
-} else {
-	fs.mkdirSync(path.substring(0,path.length-10), { recursive: true });
-
+const initBand = async () => {
 	console.log(info("Welcome to Rock and Roll: Trail to Fame!\n"));
 	console.log(info("You are the manager of a rock and roll band, and they're relying on you to make them rock legends!"));
 	console.log(info("You'll have to manage their finances, their equipment, and schedule their shows to make them the best band in the world!\n"));
@@ -122,6 +97,34 @@ if (fs.existsSync(path)) {
 	console.log(info("You have $" + band.money + " to spend on equipment upgrades and other opportunities."));
 	console.log(info("Each day, you can buy one equipment upgrade at the store, and perform perform one show at a venue."));
 	console.log(info("Good luck!\n"));
+};
+
+if (fs.existsSync(path)) {
+	const { load } = await prompt.get([{
+		name: "load",
+		description: alert("A save file was found. Would you like to load it? (y/n)"),
+		type: "string",
+		pattern: /^(y|n)$/i,
+		message: error("Please enter 'y' or 'n'"),
+		required: true
+	}]);
+	if ((load as string).toLowerCase() === "y") {
+		const bandData = JSON.parse(fs.readFileSync(path, "utf8"));
+			band = new Band(bandData.name, bandData.names);
+			band._isSigned = bandData._isSigned;
+			band._lastUnlockedVenue = bandData._lastUnlockedVenue;
+			band._labelNoDay = bandData._labelNoDay;
+			band._scoreset = bandData._scoreset;
+			band._upgrades = bandData._upgrades;
+			band.day = bandData.day;
+			band.money = bandData.money;
+			band.fame = bandData.fame;
+
+		console.log(info("Welcome back to Rock and Roll: Trail to Fame!\n"));
+	} else  await initBand();
+} else {
+	fs.mkdirSync(path.substring(0,path.length-10), { recursive: true });
+	await initBand();
 }
 
 const mainMenu = async () => {
@@ -159,7 +162,7 @@ const mainMenu = async () => {
 			let count = 0;
 			console.log(venues.map(venue => {
 				count++;
-				return menu(`${venue.name} (${count})\nFame Requirement: ${venue.fameMin}\nPopularity Multiplier: ${venue.multiplier}`)
+				return menu(`${venue.name} (${count})\n${venue.description}\nFame Requirement: ${venue.fameMin}\nPopularity Multiplier: ${venue.multiplier}`)
 			}).join("\n\n"));
 			
 
